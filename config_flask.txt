@@ -95,3 +95,9 @@ Generar un controlador para mostrar la DB en json.
 	- Flask: POST 
 	- Query:  medicamento
 	- MARKDOWN LANGUAGE for README and Contract.md (microservices, varibales and endpoint)
+
+
+	Subir los servicios en linea
+		- Dar de alta la Db con acceso seguro solo IP de red local
+		- crontab or cronjob  para ejecutar el scraper
+		- logear la salida del scraper

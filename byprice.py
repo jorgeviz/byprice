@@ -42,8 +42,9 @@ def dbSearch(search):
 	con = mdb.connect(user='testuser', passwd = 'test623', db = 'testdb', host = 'localhost', 
 	    charset="utf8", use_unicode=True)
 	cursor = con.cursor()
-	# Fetch all saved values on the DB
-	cursor.execute("SELECT * FROM item")
+	# Fetch all saved values on the DB that are into the 
+	cursor.execute("SELECT * FROM item WHERE (NOMBRE LIKE %s )",
+	                ("%" + search + "%"))
 	medicamentoSet = cursor.fetchall()
 	con.commit()
 	cursor.close()
@@ -53,12 +54,7 @@ def dbSearch(search):
 	# Create instances for filling up the list
 	# And Append to the list of Drugs
 	for med in medicamentoSet:
-		if ((search in med[1]) or (search in med[1].lower()) 
-			    or (search in med[1].upper())):
-			print(med[1])
-			medicamentosList.append(med)
-		else:
-			None
+		medicamentosList.append(med)
 	# Return jsonified elements 
 	return jsonify(medicamentosList)
 

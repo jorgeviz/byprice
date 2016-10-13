@@ -1,0 +1,97 @@
+############            Flask configuration with Nginx and Gunicorn
+
+### Connect droplet with SSH (Secure Shell)
+
+# Use Digital Ocean Droplet and connect using SSH
+$ ssh root@SERVER_IP_ADDRESS
+
+# Delete old host key
+$ ssh-keygen -R SERVER_IP_ADDRESS
+
+# If unable to connect, try this and $ ssh root again
+$ eval 'ssh-agent -s'
+$ ssh-add ~/.ssh/ID_RSA
+
+# To change the temporary password, copy and paste 'pwd' into the prompt
+# Paste it again into (current) UNIX PASSWORD
+# Change and repeat the new UNIX PASSWORD
+
+
+### Initial server configuration  : https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-14-04
+
+# Add a new user
+$ adduser DEMO
+# Give the infomation such as passwors, etc.
+
+# As root, add the new user to the 'sudo' group
+$ gpasswd -a DEMO sudo
+
+# Generate a new Key 
+$ ssh-keygen
+# Use a file with the private/public key (/Users/localuser/.ssh/id_rsa) or a new one and add a 'passphrase'  -> Generates private 'id_rsa' and public 'id_rsa.pub' int he .ssh directory
+
+# Copy the public key
+
+
+###  Install components and repositories for Flask
+# Set up a flask Application, inside the virtualenv
+ $ pip  install gunicorn flask
+
+# Create a flask application in a python file, import and instantiate Flask
+# Create a wsgi.py as entry point for Gunicorn
+# Verify Gunicorn is serving right
+$ gunicorn --bind 0.0.0.0:8000 wsgi
+# Create a Upstart Scrípt to initialize Gunicorn with th app
+$ sudo nano /etc/init/'myproject'.conf
+# Inside the .conf file     # Verify this for Ubuntu 15.04 & on
+	+
+	description "Gunicorn application server running myproject"
+
+	start on runlevel [2345]
+	stop on runlevel [!2345]
+
+	respawn
+	setuid user
+	setgid www-data
+
+	env PATH=/home/user/myproject/myprojectenv/bin
+	chdir /home/user/myproject
+	exec gunicorn --workers 3 --bind unix:myproject.sock -m 007 wsgi
+	+
+#  Configure NginX fto proxy requests
+# Create a new server block config file
+$ sudo nano /etc/nginx/sites-available/myproject
+	+
+	server {
+    listen 80;
+    server_name server_domain_or_IP;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/user/myproject/
+        # or change to :   proxy_pass http://0.0.0.0:5000;
+        myproject.sock;
+      }
+	}
+	+
+# Link the to the sites-enabled
+$ sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled
+# Check for syntax errors
+$ sudo nginx -t
+# Restart Nginx
+$ sudo service nginx restart
+
+
+# Structure of microservice in Git
+
+
+
+
+
+TODO:
+
+Generar un controlador para mostrar la DB en json.
+	- Modulo de flask SQLAlchemy
+	- Flask: POST 
+	- Query:  medicamento
+	- MARKDOWN LANGUAGE for README and Contract.md (microservices, varibales and endpoint)

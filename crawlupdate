@@ -1,0 +1,6 @@
+#!/bin/bash
+#Hourly update of the crawler
+
+source /home/crawldb/byprice/venv/bin/activate
+cd /home/crawldb/byprice/scrapmex/farmacia_scrap/ && scrapy crawl medicamento
+
